@@ -87,6 +87,30 @@ def create_mcp_server(settings: Settings) -> FastMCP:
     # correctly behind a reverse proxy or docker network.
     mcp = FastMCP(
         name="checkpoint-mcp",
+        instructions=(
+            "Check Point Harmony Endpoint is a cloud-managed endpoint protection / "
+            "EDR platform for an organization's computers (agents). Core concepts: "
+            "policy rules (threat-prevention config assigned to computers/groups), "
+            "remediation actions (investigation/response tasks run on endpoints), "
+            "quarantine (isolated suspicious files), vulnerability posture "
+            "(missing patches/CVEs per device), and the organization tree "
+            "(groups, users, computers). Every underlying API call is an async "
+            "job; tools submit the job and poll it to completion internally, so "
+            "results are returned directly without extra client-side polling. "
+            "Typical flow: checkpoint_get_policy_metadata to find a policy rule "
+            "ID, then checkpoint_get_policy_assignments / "
+            "checkpoint_get_policy_modifications for what it applies to and its "
+            "change history. checkpoint_search_organization_tree or "
+            "checkpoint_get_computers_filtered to find computers/groups, then "
+            "checkpoint_get_vulnerability_devices for their CVE exposure. "
+            "checkpoint_get_vulnerability_data and "
+            "checkpoint_get_vulnerability_scan_status give org-wide vulnerability "
+            "posture and scan status. checkpoint_get_remediation_status lists "
+            "response actions; checkpoint_get_remediation_results_slim gets one "
+            "action's results. checkpoint_get_quarantine_files lists isolated "
+            "files. All 11 tools are read-only queries; there are no write/delete "
+            "tools in this service."
+        ),
         transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
     )
 
