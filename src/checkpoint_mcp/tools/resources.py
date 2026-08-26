@@ -17,8 +17,9 @@ def register(mcp: FastMCP, client_factory: Callable[[], CheckPointClient | None]
         """List the modification history of a Harmony Endpoint policy rule.
 
         Args:
-            rule_id: Required. The policy rule ID (get one from
-                checkpoint_get_policy_metadata).
+            rule_id: Required. The exact `id` field from
+                checkpoint_get_policy_metadata's results — not the rule's
+                display name.
         """
         client = client_factory()
         if client is None:
@@ -35,8 +36,9 @@ def register(mcp: FastMCP, client_factory: Callable[[], CheckPointClient | None]
         (computers, groups, the whole organization, etc.).
 
         Args:
-            rule_id: Required. The policy rule ID (get one from
-                checkpoint_get_policy_metadata).
+            rule_id: Required. The exact `id` field from
+                checkpoint_get_policy_metadata's results — not the rule's
+                display name.
         """
         client = client_factory()
         if client is None:
@@ -54,8 +56,9 @@ def register(mcp: FastMCP, client_factory: Callable[[], CheckPointClient | None]
         """Get a slim (summary) result set for a remediation/response action.
 
         Args:
-            remediation_id: Required. The remediation action ID (get one
-                from checkpoint_get_remediation_status).
+            remediation_id: Required. The exact action ID from
+                checkpoint_get_remediation_status's results — not a
+                guessed/invented value.
             offset: Optional. Pagination offset. Default 0.
             page_size: Optional. Page size. Default 150, max 200.
         """
@@ -97,7 +100,9 @@ def register(mcp: FastMCP, client_factory: Callable[[], CheckPointClient | None]
 
     @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
     async def checkpoint_get_vulnerability_data(offset: int = 0, page_size: int = 100) -> str:
-        """List vulnerability posture findings across the organization.
+        """List vulnerability posture findings across the organization — the
+        actual discovered vulnerabilities, not whether a scan job ran (see
+        checkpoint_get_vulnerability_scan_status for that).
 
         Args:
             offset: Optional. Pagination offset. Default 0.
@@ -160,9 +165,12 @@ def register(mcp: FastMCP, client_factory: Callable[[], CheckPointClient | None]
         """List managed computers/endpoints, optionally filtered.
 
         Args:
-            filter: Optional. Vendor-defined filter object. Omit for an
-                unfiltered listing (matches MSPbots' own configured usage,
-                which sends an empty body).
+            filter: Optional. Vendor-defined filter object; its exact keys
+                are undocumented and not validated by this server. To
+                filter by a group/org unit, first resolve its ID via
+                checkpoint_search_organization_tree — do not guess filter
+                keys. Omit for an unfiltered listing (matches MSPbots' own
+                configured usage, which sends an empty body).
         """
         client = client_factory()
         if client is None:
@@ -223,7 +231,9 @@ def register(mcp: FastMCP, client_factory: Callable[[], CheckPointClient | None]
 
     @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
     async def checkpoint_get_vulnerability_scan_status() -> str:
-        """Get the status of vulnerability scans across the organization.
+        """Get the status of vulnerability SCAN JOBS themselves (has a scan
+        run/completed/failed) — not the vulnerability findings (see
+        checkpoint_get_vulnerability_data for those).
 
         No required parameters.
         """
